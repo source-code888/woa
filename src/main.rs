@@ -1,3 +1,4 @@
+#![allow(unused)]
 mod whale;
 mod woa;
 mod jssp_instance;
@@ -6,13 +7,12 @@ extern crate nalgebra as na;
 
 use plotters::prelude::*;
 
-use crate::whale::Whale;
-use crate::woa::WOA;
 use na::DVector;
 use std::error::Error;
 use std::f64::consts::PI;
+use crate::jssp_instance::{Instance, JSSPInstance};
 
-#[allow(unused)]
+
 fn objective_function(position: &DVector<f64>) -> f64 {
     let mut f: f64 = 0f64;
     for i in 0..position.len() {
@@ -21,7 +21,6 @@ fn objective_function(position: &DVector<f64>) -> f64 {
     f
 }
 
-#[allow(unused)]
 fn f_8(position: &DVector<f64>) -> f64 {
     let mut f: f64 = 0f64;
     for i in 0..position.len() {
@@ -29,6 +28,7 @@ fn f_8(position: &DVector<f64>) -> f64 {
     }
     f
 }
+
 
 fn create_graphic_2d(
     filename: &str,
@@ -54,55 +54,16 @@ fn create_graphic_2d(
     Ok(())
 }
 
-fn main() {
-    let population_size: usize = 40;
-    let dim = 3;
-    //Lower, Upper
-    let bounds: (f64, f64) = (-5.12, 5.12);
-    let maximization: bool = false;
-    let max_iterations: usize = 500;
-    let mut algorithm: WOA = WOA::initialize(
-        dim,
-        population_size,
-        bounds,
-        maximization,
-        max_iterations,
-        objective_function,
-    );
-    let history = algorithm.run();
-    let whale = Whale::from_fn(|| history.last().unwrap().clone());
-    let all_fitness: Vec<f64> = history.iter().map(|h| h.1).collect();
-    println!("{:#?}", whale.to_string());
-    create_graphic_2d(
-        "graphics/woa/graphic_f9.png",
-        "F9(X) = Sum(i = 1..n, -X[i].powf(2) - 10 * (2 * PI * X[i]).cos() + 10)",
-        (0, 499),
-        (0f64, 20f64),
-        &all_fitness[..]
-    ).expect("Could not create graphic 2D")
-    /*let population_size: usize = 40;
-    let dim = 3;
-    //Lower, Upper
-    let bounds: (f64, f64) = (-500f64, 500f64);
-    let maximization: bool = false;
-    let max_iterations: usize = 500;
-    let mut algorithm: WOA = WOA::initialize(
-        dim,
-        population_size,
-        bounds,
-        maximization,
-        max_iterations,
-        f_8,
-    );
-    let history = algorithm.run();
-    let whale = Whale::from_fn(|| history.last().unwrap().clone());
-    let all_fitness: Vec<f64> = history.iter().map(|h| h.1).collect();
-    println!("{:#?}", whale.to_string());
-    create_graphic_2d(
-        "graphics/woa/graphic_f8.png",
-        "F9(X) = Sum(i = 1..n, -X[i] * (-X[i].abs().sqrt()).sin())",
-        (0, 499),
-        (-400f64, -420f64),
-        &all_fitness[..]
-    ).expect("Could not create graphic 2D")*/
+fn main() -> Result<(), Box<dyn Error>> {
+    let instance: Instance = Instance::LA05;
+    let instance = JSSPInstance::from_instance(instance, String::from("src/jssp_instance/lit/"))?;
+    println!("Sequences: ");
+    instance.sequences.iter()
+        .for_each(
+            |i| println!("{i:?}")
+        );
+    println!("Processing times: ");
+    instance.processing_times.iter()
+        .for_each(|p| println!("{p:?}"));
+    Ok(())
 }

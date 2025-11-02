@@ -29,7 +29,6 @@ impl Whale {
         self.fitness = func(&self.position);
     }
 
-    #[allow(unused)]
     pub fn to_string(&self) -> String {
         format!(
             "Whale {{position: {:?}, fitness: {}}}",
@@ -38,12 +37,10 @@ impl Whale {
         )
     }
 
-    #[allow(unused)]
     pub fn as_tuple(&self) -> (DVector<f64>, f64) {
         (self.position.clone(), self.fitness)
     }
 
-    #[allow(unused)]
     pub fn from_fn<F>(f: F) -> Self
     where
         F: Fn() -> (DVector<f64>, f64),
